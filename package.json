@@ -12,11 +12,17 @@
       "hash": "QmVdtNvi3madh1HtiX4HByrpjQqkkHUYh6DARq2QC6NxXt",
       "name": "spdystream",
       "version": "0.0.0"
+    },
+    {
+      "author": "whyrusleeping",
+      "hash": "Qmb1US8uyZeEpMyc56wVZy2cDFdQjNFojAUYVCoo9ieTqp",
+      "name": "go-stream-muxer",
+      "version": "1.0.0"
     }
   ],
   "gxVersion": "0.7.0",
   "language": "go",
   "license": "",
   "name": "go-smux-spdystream",
-  "version": "0.0.0"
+  "version": "1.0.0"
 }
