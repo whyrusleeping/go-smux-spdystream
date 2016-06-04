@@ -68,8 +68,8 @@ func (c *conn) IsClosed() bool {
 // OpenStream creates a new stream.
 func (c *conn) OpenStream() (smux.Stream, error) {
 	s, err := c.spdyConn().CreateStream(http.Header{
-		":method": []string{"GET"}, // this is here for HTTP/SPDY interop
-		":path":   []string{"/"},   // this is here for HTTP/SPDY interop
+		":method": []string{"POST"}, // this is here for HTTP/SPDY interop
+		":path":   []string{"/"},    // this is here for HTTP/SPDY interop
 	}, nil, false)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,9 @@ func (c *conn) Serve(handler smux.StreamHandler) {
 		// -- at this moment -- not the solution. Either spdystream must
 		// change, or we must throttle another way. go-peerstream handles
 		// every new stream in its own goroutine.
-		err := s.SendReply(http.Header{}, false)
+		err := s.SendReply(http.Header{
+			":status": []string{"200"},
+		}, false)
 		if err != nil {
 			// this _could_ error out. not sure how to handle this failure.
 			// don't return, and let the caller handle a broken stream.
