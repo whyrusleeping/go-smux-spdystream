@@ -109,6 +109,7 @@ func (c *conn) Serve(handler smux.StreamHandler) {
 			// better than _hiding_ an error.
 			// return
 		}
+
 		go handler((*stream)(s))
 	})
 }

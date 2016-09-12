@@ -9,7 +9,7 @@
   "gxDependencies": [
     {
       "author": "whyrusleeping",
-      "hash": "QmVdtNvi3madh1HtiX4HByrpjQqkkHUYh6DARq2QC6NxXt",
+      "hash": "QmcYJUDWAXBQbjQc4F2Ff9a24kuqMNSwQ4SvDb6fryPLg7",
       "name": "spdystream",
       "version": "0.0.0"
     },
@@ -24,5 +24,5 @@
   "language": "go",
   "license": "",
   "name": "go-smux-spdystream",
-  "version": "1.0.1"
+  "version": "1.1.0"
 }
