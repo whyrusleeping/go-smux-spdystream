@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net"
 	"net/http"
+	"time"
 
 	ss "github.com/docker/spdystream"
 	smux "github.com/jbenet/go-stream-muxer"
@@ -33,6 +34,18 @@ func (s *stream) Close() error {
 	// spdystream options, just get the stream with:
 	//  ssStream := (*ss.Stream)(stream)
 	return s.spdyStream().Reset()
+}
+
+func (s *stream) SetDeadline(t time.Time) error {
+	return (*ss.Stream)(s).SetDeadline(t)
+}
+
+func (s *stream) SetReadDeadline(t time.Time) error {
+	return (*ss.Stream)(s).SetReadDeadline(t)
+}
+
+func (s *stream) SetWriteDeadline(t time.Time) error {
+	return (*ss.Stream)(s).SetWriteDeadline(t)
 }
 
 // Conn is a connection to a remote peer.
