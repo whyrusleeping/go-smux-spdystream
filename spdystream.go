@@ -27,13 +27,16 @@ func (s *stream) Write(buf []byte) (int, error) {
 	return s.spdyStream().Write(buf)
 }
 
+// TODO: make sure this is correct
+// there seem to be more problems in the SPDY library (see https://github.com/whyrusleeping/go-smux-spdystream/pull/5)
 func (s *stream) Close() error {
-	// Reset is spdystream's full bidirectional close.
-	// We expose bidirectional close as our `Close`.
-	// To close only half of the connection, and use other
-	// spdystream options, just get the stream with:
-	//  ssStream := (*ss.Stream)(stream)
-	return s.spdyStream().Reset()
+	return s.spdyStream().Close()
+}
+
+// TODO: make sure this is correct
+// there seem to be more problems in the SPDY library (see https://github.com/whyrusleeping/go-smux-spdystream/pull/5)
+func (s *stream) Reset() error {
+	return s.spdyStream().Close()
 }
 
 func (s *stream) SetDeadline(t time.Time) error {
