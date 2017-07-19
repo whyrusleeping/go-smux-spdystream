@@ -7,7 +7,7 @@ import (
 	"time"
 
 	ss "github.com/docker/spdystream"
-	smux "github.com/jbenet/go-stream-muxer"
+	smux "github.com/libp2p/go-stream-muxer"
 )
 
 var ErrUseServe = errors.New("not implemented, use Serve")
