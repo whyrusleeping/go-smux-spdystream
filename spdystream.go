@@ -33,7 +33,7 @@ func (s *stream) Close() error {
 	// To close only half of the connection, and use other
 	// spdystream options, just get the stream with:
 	//  ssStream := (*ss.Stream)(stream)
-	return s.spdyStream().Reset()
+	return s.spdyStream().Close()
 }
 
 func (s *stream) Reset() error {
