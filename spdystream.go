@@ -7,7 +7,7 @@ import (
 	"time"
 
 	ss "github.com/docker/spdystream"
-	smux "github.com/jbenet/go-stream-muxer"
+	smux "github.com/libp2p/go-stream-muxer"
 )
 
 var ErrUseServe = errors.New("not implemented, use Serve")
@@ -33,6 +33,10 @@ func (s *stream) Close() error {
 	// To close only half of the connection, and use other
 	// spdystream options, just get the stream with:
 	//  ssStream := (*ss.Stream)(stream)
+	return s.spdyStream().Close()
+}
+
+func (s *stream) Reset() error {
 	return s.spdyStream().Reset()
 }
 
