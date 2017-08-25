@@ -95,7 +95,7 @@ func (c *conn) OpenStream() (smux.Stream, error) {
 	// wait for a response before writing. for some reason
 	// spdystream does not make forward progress unless you do this.
 	s.Wait()
-	return (*stream)(s), nil
+	return (*ss.Stream)(s), nil
 }
 
 // AcceptStream accepts a stream opened by the other side.
@@ -127,7 +127,7 @@ func (c *conn) Serve(handler smux.StreamHandler) {
 			// return
 		}
 
-		go handler((*stream)(s))
+		go handler((*ss.Stream)(s))
 	})
 }
 
