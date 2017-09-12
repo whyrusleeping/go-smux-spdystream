@@ -10,7 +10,8 @@ import (
 	smux "github.com/libp2p/go-stream-muxer"
 )
 
-var ErrUseServe = errors.New("not implemented, use Serve")
+// errClosed is returned when trying to accept a stream from a closed connection
+var errClosed = errors.New("conn closed")
 
 // stream implements smux.Stream using a ss.Stream
 type stream ss.Stream
@@ -52,9 +53,14 @@ func (s *stream) SetWriteDeadline(t time.Time) error {
 	return (*ss.Stream)(s).SetWriteDeadline(t)
 }
 
+// StreamQueueLen is the length of the stream queue.
+const StreamQueueLen = 10
+
 // Conn is a connection to a remote peer.
 type conn struct {
 	sc *ss.Connection
+
+	streamQueue chan *ss.Stream
 
 	closed chan struct{}
 }
@@ -100,14 +106,23 @@ func (c *conn) OpenStream() (smux.Stream, error) {
 
 // AcceptStream accepts a stream opened by the other side.
 func (c *conn) AcceptStream() (smux.Stream, error) {
-	return nil, ErrUseServe
+	if c.IsClosed() {
+		return nil, errClosed
+	}
+
+	select {
+	case <-c.closed:
+		return nil, errClosed
+	case <-c.sc.CloseChan():
+		return nil, errClosed
+	case s := <-c.streamQueue:
+		return s, nil
+	}
 }
 
-// Serve starts listening for incoming requests and handles them
-// using given StreamHandler
-func (c *conn) Serve(handler smux.StreamHandler) {
+// serve accepts incoming streams and places them in the streamQueue
+func (c *conn) serve() {
 	c.spdyConn().Serve(func(s *ss.Stream) {
-
 		// Flow control and backpressure of Opening streams is broken.
 		// I believe that spdystream has one set of workers that both send
 		// data AND accept new streams (as it's just more data). there
@@ -126,8 +141,7 @@ func (c *conn) Serve(handler smux.StreamHandler) {
 			// better than _hiding_ an error.
 			// return
 		}
-
-		go handler((*stream)(s))
+		c.streamQueue <- s
 	})
 }
 
@@ -139,5 +153,14 @@ var Transport = transport{}
 
 func (t transport) NewConn(nc net.Conn, isServer bool) (smux.Conn, error) {
 	sc, err := ss.NewConnection(nc, isServer)
-	return &conn{sc: sc, closed: make(chan struct{})}, err
+	if err != nil {
+		return nil, err
+	}
+	c := &conn{
+		sc:     sc,
+		closed: make(chan struct{}),
+	}
+	c.streamQueue = make(chan *ss.Stream, StreamQueueLen)
+	go c.serve()
+	return c, nil
 }
